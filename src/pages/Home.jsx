@@ -254,7 +254,13 @@ const Home = () => {
                     <Link to="/defense-sector" className="hover:text-primary transition-colors">Defense</Link>
                     <Link to="/business-immigration" className="hover:text-primary transition-colors">Business</Link>
                 </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">&copy; 2026 Trilink Mobility.</p>
+                <div className="flex justify-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span>&copy; 2026 Trilink Mobility.</span>
+                    <span>|</span>
+                    <Link to="/impressum" className="hover:text-slate-600 transition-colors">Impressum</Link>
+                    <span>|</span>
+                    <Link to="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
+                </div>
             </footer>
         </div>
     );

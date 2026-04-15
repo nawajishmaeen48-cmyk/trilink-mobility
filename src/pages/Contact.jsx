@@ -3,9 +3,10 @@ import { Navbar } from '../components/Navbar';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import { Link } from 'react-router-dom';
 import {
     CheckCircle2, Send, Mail, Phone, MapPin,
-    Globe, ArrowRight, Linkedin, Twitter, MessageSquare
+    Globe, ArrowRight, Linkedin, MessageSquare
 } from 'lucide-react';
 
 const ContactInfoItem = ({ icon: Icon, title, content, link }) => (
@@ -34,7 +35,8 @@ const Contact = () => {
         lastName: '',
         email: '',
         sector: '',
-        message: ''
+        message: '',
+        privacyPolicy: false
     });
 
     useEffect(() => {
@@ -42,8 +44,8 @@ const Contact = () => {
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSubmit = async (e) => {
@@ -57,6 +59,7 @@ const Contact = () => {
 
         try {
             const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-At9-GQb_8hhgjF9-5LAQcgrQZCT7NZMKL32nP3OfQ4SjfkcNxwYLUs7940vSCPqz/exec";
+            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
             // Use URLSearchParams for application/x-www-form-urlencoded
             // This is a "simple request" and more compatible with Google Apps Script doPost(e)
@@ -65,11 +68,29 @@ const Contact = () => {
                 formDataBody.append(key, submissionData[key]);
             });
 
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: formDataBody,
-            });
+            // Send to Google Sheets and send email notification in parallel
+            const [sheetsResponse, emailResponse] = await Promise.allSettled([
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    body: formDataBody,
+                }),
+                fetch(`${API_URL}/api/send-email`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(submissionData),
+                })
+            ]);
+
+            // Log results for debugging
+            console.log("Google Sheets response:", sheetsResponse);
+            console.log("Email response:", emailResponse);
+
+            if (emailResponse.status === "rejected") {
+                console.error("Email sending failed:", emailResponse.reason);
+            }
 
             setSubmitted(true);
             setFormData({
@@ -77,7 +98,8 @@ const Contact = () => {
                 lastName: '',
                 email: '',
                 sector: '',
-                message: ''
+                message: '',
+                privacyPolicy: false
             });
         } catch (error) {
             console.error("Form submission error:", error);
@@ -135,13 +157,8 @@ const Contact = () => {
                             <ContactInfoItem
                                 icon={Phone}
                                 title="Call Us"
-                                content="+49 (30) 1234 5678"
-                                link="tel:+493012345678"
-                            />
-                            <ContactInfoItem
-                                icon={MapPin}
-                                title="Visit Us"
-                                content="Friedrichstraße 123, 10117 Berlin"
+                                content="+49 (0) 176 87966231"
+                                link="tel:+49017687966231"
                             />
                         </div>
                     </div>
@@ -149,7 +166,6 @@ const Contact = () => {
                     <div className="relative z-10 mt-12 pt-6 border-t border-white/5 flex items-center justify-between">
                         <div className="flex gap-4">
                             <Linkedin className="w-4 h-4 text-slate-500 hover:text-white transition-colors cursor-pointer" />
-                            <Twitter className="w-4 h-4 text-slate-500 hover:text-white transition-colors cursor-pointer" />
                             <MessageSquare className="w-4 h-4 text-slate-500 hover:text-white transition-colors cursor-pointer" />
                         </div>
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">
@@ -257,7 +273,26 @@ const Contact = () => {
                                     />
                                 </div>
 
-                                <div className="md:col-span-2 pt-4">
+                                <div className="md:col-span-2 flex items-start gap-3">
+                                    <input
+                                        type="checkbox"
+                                        id="privacyPolicy"
+                                        name="privacyPolicy"
+                                        checked={formData.privacyPolicy}
+                                        onChange={handleChange}
+                                        required
+                                        className="mt-0.5 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                                    />
+                                    <label htmlFor="privacyPolicy" className="text-xs text-slate-500 leading-relaxed cursor-pointer">
+                                        I agree to the{' '}
+                                        <Link to="/privacy" target="_blank" className="text-primary hover:underline font-medium">
+                                            Privacy Policy
+                                        </Link>
+                                        {' '}and consent to the processing of my personal data.
+                                    </label>
+                                </div>
+
+                                <div className="md:col-span-2 pt-2">
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting}

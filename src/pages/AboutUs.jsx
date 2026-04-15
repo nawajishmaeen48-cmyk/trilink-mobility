@@ -70,35 +70,38 @@ const AboutUs = () => {
             <section className="py-24 container-width px-6">
                 <div className="space-y-32">
                     {teamMembers.map((member, idx) => (
-                        <div key={member.id} className={`flex flex-col ${idx % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-start gap-16`}>
-                            {/* Photo Side - Sticky */}
-                            <div className="lg:w-5/12 lg:sticky lg:top-32 w-full">
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-[2rem] translate-y-4 translate-x-4 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-500" />
-                                    <div className="relative rounded-[2rem] overflow-hidden shadow-2xl aspect-[3/4]">
-                                        <img
-                                            src={member.image}
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            alt={member.name}
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60" />
-                                        <div className="absolute bottom-0 left-0 p-8 w-full text-white">
-                                            <p className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">{member.department}</p>
-                                            <h3 className="text-2xl font-bold mb-1">{member.name}</h3>
-                                            <p className="text-sm opacity-90">{member.role}</p>
+                        <div key={member.id} className={`flex flex-col ${idx % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-start gap-12`}>
+                            {/* Photo Side */}
+                            <div className="lg:w-3/12 w-full">
+                                <div className="flex flex-col items-center">
+                                    {/* Circular Photo */}
+                                    <div className="relative group w-[180px] h-[180px]">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent rounded-full translate-y-1 translate-x-1 group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-500" />
+                                        <div className="relative rounded-full overflow-hidden shadow-lg w-full h-full border-4 border-white">
+                                            <img
+                                                src={member.image}
+                                                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                                                alt={member.name}
+                                            />
                                         </div>
                                     </div>
-
-                                    {/* Social Links Floating */}
-                                    <div className="absolute -right-6 top-12 flex flex-col gap-3">
+                                    
+                                    {/* Name and Role */}
+                                    <div className="text-center mt-5">
+                                        <h3 className="text-lg font-bold text-slate-900">{member.name}</h3>
+                                        <p className="text-sm text-slate-500">{member.role}</p>
+                                    </div>
+                                    
+                                    {/* Social Icons */}
+                                    <div className="flex items-center gap-3 mt-4">
                                         {member.social.linkedin && (
-                                            <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="bg-white p-3 rounded-full shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
-                                                <Linkedin className="w-5 h-5" />
+                                            <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-primary hover:text-white transition-all">
+                                                <Linkedin className="w-4 h-4" />
                                             </a>
                                         )}
                                         {member.social.email && (
-                                            <a href={`mailto:${member.social.email}`} className="bg-white p-3 rounded-full shadow-lg text-slate-600 hover:text-primary hover:scale-110 transition-all">
-                                                <Mail className="w-5 h-5" />
+                                            <a href={`mailto:${member.social.email}`} className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-primary hover:text-white transition-all">
+                                                <Mail className="w-4 h-4" />
                                             </a>
                                         )}
                                     </div>
@@ -106,10 +109,14 @@ const AboutUs = () => {
                             </div>
 
                             {/* Bio Side */}
-                            <div className="lg:w-7/12 pt-4">
+                            <div className="lg:w-9/12">
                                 <div className="mb-8">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6 tracking-tight">
-                                        Expertise & Background
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-8 h-0.5 bg-primary"></div>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Profile</span>
+                                    </div>
+                                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6 tracking-tight">
+                                        {member.name}
                                     </h2>
                                     <div className="prose prose-lg text-slate-600 leading-relaxed max-w-none">
                                         <p className="font-medium text-slate-800 text-xl mb-6 border-l-4 border-primary pl-6 italic">
@@ -172,7 +179,13 @@ const AboutUs = () => {
                         className="h-8 w-auto object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all"
                     />
                 </div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">&copy; 2026 Trilink Mobility.</p>
+                <div className="flex justify-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <span>&copy; 2026 Trilink Mobility.</span>
+                    <span>|</span>
+                    <Link to="/impressum" className="hover:text-slate-600 transition-colors">Impressum</Link>
+                    <span>|</span>
+                    <Link to="/privacy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
+                </div>
             </footer>
         </div>
     );

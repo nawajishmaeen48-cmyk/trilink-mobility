@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import DepartmentPage from "./pages/DepartmentPage";
 import AboutUs from "./pages/AboutUs";
+import Impressum from "./pages/Impressum";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import { Toaster } from "./components/ui/sonner";
 
 import Contact from "./pages/Contact";
@@ -14,6 +16,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/health-care" element={<DepartmentPage type="healthcare" />} />
           <Route path="/defense-sector" element={<DepartmentPage type="defense" />} />
           <Route path="/contact" element={<Contact />} />
