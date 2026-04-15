@@ -59,7 +59,6 @@ const Contact = () => {
 
         try {
             const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-At9-GQb_8hhgjF9-5LAQcgrQZCT7NZMKL32nP3OfQ4SjfkcNxwYLUs7940vSCPqz/exec";
-            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
             // Use URLSearchParams for application/x-www-form-urlencoded
             // This is a "simple request" and more compatible with Google Apps Script doPost(e)
@@ -75,7 +74,7 @@ const Contact = () => {
                     mode: "no-cors",
                     body: formDataBody,
                 }),
-                fetch(`${API_URL}/api/send-email`, {
+                fetch("/api/send-email", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

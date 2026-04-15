@@ -1,16 +1,7 @@
-const express = require('express');
-const cors = require('cors');
 const { Resend } = require('resend');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
-
-// Initialize Resend with API key
-const resend = new Resend('re_ADPPgzck_HuQJW77VgwvUvjsUNjQJzckJ');
-
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Initialize Resend with API key from environment variable
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Department email mapping
 const DEPARTMENT_EMAILS = {
@@ -24,15 +15,29 @@ const DEPARTMENT_EMAILS = {
 const TEST_MODE = true;
 const VERIFIED_EMAIL = 'nawajishmaeen48@gmail.com';
 
-// Email endpoint
-app.post('/api/send-email', async (req, res) => {
+module.exports = async (req, res) => {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Handle preflight request
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    // Only allow POST requests
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
     try {
         const { firstName, lastName, email, sector, message, timestamp } = req.body;
 
         // Validate required fields
         if (!firstName || !lastName || !email || !sector || !message) {
-            return res.status(400).json({ 
-                error: 'Missing required fields' 
+            return res.status(400).json({
+                error: 'Missing required fields'
             });
         }
 
@@ -45,7 +50,7 @@ app.post('/api/send-email', async (req, res) => {
                 <h2 style="color: #0f172a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
                     New Contact Form Submission
                 </h2>
-                
+
                 <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
                     <h3 style="color: #1e293b; margin-top: 0;">Contact Details</h3>
                     <table style="width: 100%; border-collapse: collapse;">
@@ -91,37 +96,27 @@ app.post('/api/send-email', async (req, res) => {
 
         if (error) {
             console.error('Resend error:', error);
-            return res.status(500).json({ 
+            return res.status(500).json({
                 error: 'Failed to send email',
-                details: error 
+                details: error
             });
         }
 
         console.log('Email sent successfully:', data);
-        res.json({ 
-            success: true, 
+        return res.status(200).json({
+            success: true,
             message: 'Email sent successfully',
             testMode: TEST_MODE,
             sentTo: recipientEmails,
             actualRecipients: Object.values(DEPARTMENT_EMAILS),
-            data 
+            data
         });
 
     } catch (error) {
         console.error('Server error:', error);
-        res.status(500).json({ 
+        return res.status(500).json({
             error: 'Internal server error',
-            details: error.message 
+            details: error.message
         });
     }
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`API Key configured: Yes`);
-});
+};
